@@ -9,9 +9,9 @@ class AuthService {
      FirebaseUser user = result.user;
      return user;
 
-   } catch(e){
-     print('error :$e');
-     return null;
+   } on AuthException catch  (e) {
+     print('Failed with error code: ${e.code}');
+     print(e.message);
    }
  }
 
