@@ -8,7 +8,12 @@ class AuthService {
     return user != null ? User(uid:user.uid)  : null;
   }
 
-
+ // auth changes user stream
+  Stream<User> get user {
+    return _auth.onAuthStateChanged
+        .map((FirebaseUser user)=> _userFromFirebaseUser(user));
+    //.map(_userFromFirebaseUser); same
+  }
 
 
 
@@ -30,6 +35,16 @@ class AuthService {
   //register with email & password
 
   // sign out
+
+  Future signOut() async {
+    try {
+      return await _auth.signOut();
+
+    } on AuthException catch  (e) {
+      print('Failed with error code: ${e.code}');
+      print(e.message);
+    }
+  }
 
 
 
