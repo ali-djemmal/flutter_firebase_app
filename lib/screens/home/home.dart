@@ -11,10 +11,10 @@ class _HomeState extends State<Home > {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.brown[50],
+      backgroundColor: Color(0xFFE6E6E6),
       appBar: AppBar(
-        title: Text("Home"),
-        backgroundColor: Colors.brown[500],
+        backgroundColor:Color(0xFFC5A880),
+        title: Text('Home'),
         elevation: 0.0,
         actions: <Widget>[
           FlatButton.icon(

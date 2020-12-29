@@ -2,19 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app_coffee/services/auth.dart';
 
 
-class SignIn extends StatefulWidget {
+class Register extends StatefulWidget {
+
   final Function toggleView;
-  SignIn({this.toggleView});
+  Register({this.toggleView});
 
   @override
-  _SignInState createState() => _SignInState();
+  _RegisterState createState() => _RegisterState();
 }
-class _SignInState extends State<SignIn> {
+class _RegisterState extends State<Register> {
 
   final AuthService _auth = AuthService();
   // text field state
   String email="";
   String password="";
+  String error="";
+  final  _formKey = GlobalKey<FormState>();
 
 
   @override
@@ -23,15 +26,15 @@ class _SignInState extends State<SignIn> {
       backgroundColor: Color(0xFFE6E6E6),
       appBar: AppBar(
         backgroundColor:Color(0xFFC5A880),
-        title: Text('Sign In to Coffee App'),
+        title: Text('Register'),
         elevation: 0.0,
         actions: <Widget>[
           FlatButton.icon(
               onPressed: ()  {
-                widget.toggleView();
+              widget.toggleView();
               },
               icon: Icon(Icons.person),
-              label: Text("Register")
+              label: Text("Sign in")
           ),
         ],
       ),
@@ -40,16 +43,18 @@ class _SignInState extends State<SignIn> {
         padding: EdgeInsets.symmetric(vertical: 20,horizontal: 50),
 
         child: Form(
+          key: _formKey,
           child: Column(
             children: <Widget>[
               SizedBox(
                 height: 20.0,
               ),
               TextFormField(
+                validator: (val)=> val.isEmpty ? 'Enter an email' : null,
                 decoration: InputDecoration(
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFF532E1C))
-                  )
+                    focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Color(0xFF532E1C))
+                    )
                 ),
                 cursorColor: Color(0xFF532E1C),
                 onChanged: (val){
@@ -63,6 +68,7 @@ class _SignInState extends State<SignIn> {
                 height: 20.0,
               ),
               TextFormField(
+                validator: (val)=> val.length < 6 ? 'Enter a password +6 chars long' : null,
                 decoration: InputDecoration(
                     focusedBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color: Color(0xFF532E1C))
@@ -82,22 +88,28 @@ class _SignInState extends State<SignIn> {
                 height: 20.0,
               ),
               RaisedButton(onPressed: () async {
-                dynamic result = await _auth.signInAnon();
-                if(result == null){
+                if(_formKey.currentState.validate()){
 
-                  print("error sign in");
+                  dynamic result = await _auth.registerWithEmailAndPassword(email, password);
+                  if(result== null){
+                    setState(() {
+                       error="please entre a valide email";
+                    });
+                  }
 
                 }else{
-                  print(email);
-                  print("sign in");
-                  print(result.uid);
-
+                  print("inpute not valid");
                 }
+
+
 
               },
                 color:  Color(0xFF532E1C),
-                child: Text('sign in',style: TextStyle(color:Colors.white)),
+                child: Text('Register',style: TextStyle(color:Colors.white)),
               ),
+              SizedBox(height: 12.0,),
+              Text(error,
+              style: TextStyle(color: Colors.red,fontSize: 14.0),)
             ],
 
           ),
