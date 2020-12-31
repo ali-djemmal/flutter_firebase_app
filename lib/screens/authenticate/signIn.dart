@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app_coffee/services/auth.dart';
+import 'package:flutter_app_coffee/shared/canstants.dart';
+import 'package:flutter_app_coffee/shared/loading.dart';
 
 
 class SignIn extends StatefulWidget {
@@ -15,11 +17,14 @@ class _SignInState extends State<SignIn> {
   // text field state
   String email="";
   String password="";
+  String error="";
+  final  _formKey = GlobalKey<FormState>();
+  bool loading = false;
 
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return loading ? Loading() : Scaffold(
       backgroundColor: Color(0xFFE6E6E6),
       appBar: AppBar(
         backgroundColor:Color(0xFFC5A880),
@@ -40,17 +45,15 @@ class _SignInState extends State<SignIn> {
         padding: EdgeInsets.symmetric(vertical: 20,horizontal: 50),
 
         child: Form(
+          key: _formKey,
           child: Column(
             children: <Widget>[
               SizedBox(
                 height: 20.0,
               ),
               TextFormField(
-                decoration: InputDecoration(
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFF532E1C))
-                  )
-                ),
+                validator: (val)=> val.isEmpty ? 'Enter an email' : null,
+                decoration: textInputDecoration.copyWith(hintText: 'Email'),
                 cursorColor: Color(0xFF532E1C),
                 onChanged: (val){
                   setState(() {
@@ -63,11 +66,8 @@ class _SignInState extends State<SignIn> {
                 height: 20.0,
               ),
               TextFormField(
-                decoration: InputDecoration(
-                    focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Color(0xFF532E1C))
-                    )
-                ),
+                validator: (val)=> val.length < 6 ? 'Enter a password +6 chars long' : null,
+                decoration: textInputDecoration.copyWith(hintText: 'Password'),
                 cursorColor: Color(0xFF532E1C),
                 obscureText: true,
                 onChanged: (val){
@@ -82,22 +82,34 @@ class _SignInState extends State<SignIn> {
                 height: 20.0,
               ),
               RaisedButton(onPressed: () async {
-                dynamic result = await _auth.signInAnon();
-                if(result == null){
+                if(_formKey.currentState.validate()){
+                  setState(() {
+                    loading = true;
+                  });
 
-                  print("error sign in");
+                  dynamic result = await _auth.signInWithEmailAndPassword(email, password);
+                  if(result== null){
+                    setState(() {
+                      loading = false;
+                      error="the crendentials error";
+                    });
+                  }
+
+
 
                 }else{
-                  print(email);
-                  print("sign in");
-                  print(result.uid);
-
+                  print("inpute not valid");
                 }
+
+
 
               },
                 color:  Color(0xFF532E1C),
-                child: Text('sign in',style: TextStyle(color:Colors.white)),
+                child: Text('Sign In',style: TextStyle(color:Colors.white)),
               ),
+              SizedBox(height: 12.0,),
+              Text(error,
+                style: TextStyle(color: Colors.red,fontSize: 14.0),)
             ],
 
           ),
