@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app_coffee/services/auth.dart';
 import 'package:flutter_app_coffee/shared/canstants.dart';
+import 'package:flutter_app_coffee/shared/loading.dart';
 
 class Register extends StatefulWidget {
   final Function toggleView;
@@ -17,10 +18,11 @@ class _RegisterState extends State<Register> {
   String password = "";
   String error = "";
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool loading = false;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return loading ? Loading() : Scaffold(
       backgroundColor: Color(0xFFE6E6E6),
       appBar: AppBar(
         backgroundColor: Color(0xFFC5A880),
@@ -74,11 +76,17 @@ class _RegisterState extends State<Register> {
               RaisedButton(
                 onPressed: () async {
                   if (_formKey.currentState.validate()) {
+                    setState(() {
+                      loading = true;
+                    });
                     print(email);
                     dynamic result = await _auth.registerWithEmailAndPassword(
                         email, password);
                     if (result == null) {
-                      setState(() => error = "please entre a valide email");
+                      setState(() {
+                        loading = false;
+                        error = "please entre a valide email";
+                      });
                     }
                   } else {
                     print("inpute not valid");
